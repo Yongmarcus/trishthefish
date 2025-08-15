@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trish the Fish Quiz</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #fafafa;
+    }
+    .container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+    }
+    h1, h2 {
+        text-align: center;
+    }
+    .question {
+        margin-bottom: 20px;
+    }
+    .option {
+        background: white;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border: 2px solid transparent;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .option:hover {
+        border-color: #ccc;
+    }
+    .selected {
+        background: #d4f7d4;
+        border-color: #4CAF50;
+    }
+    .option-title {
+        font-weight: bold;
+        display: none;
+    }
+    .option.revealed .option-title {
+        display: block;
+    }
+    .arrow-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 15px;
+        border-radius: 50%;
+        font-size: 20px;
+        cursor: pointer;
+        display: none;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+    .results {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+    }
+    .result-block {
+        margin-bottom: 20px;
+    }
+    .result-block strong {
+        display: block;
+        margin-bottom: 5px;
+    }
+</style>
+</head>
+<body>
+<div class="container" id="quiz-container">
+    <h1>Welcome</h1>
+    <div class="question">
+        <label for="username">Enter your name:</label>
+        <input type="text" id="username" style="width:100%;padding:10px;margin-top:8px;">
+    </div>
+    <button onclick="startQuiz()" style="width:100%;padding:10px;background:#4CAF50;color:white;border:none;border-radius:5px;">Start</button>
+</div>
+<button class="arrow-btn" id="next-btn" onclick="nextQuestion()">→</button>
+<script>
+    const questions = [
+        {
+            question: "Where would you like to eat?",
+            options: [
+                { title: "Bread Talk - TTDI", desc: "Many recommended, but we haven't tried" },
+                { title: "Jeong Sikdang - Mont Kiara", desc: "I told you about this before" },
+                { title: "Monkey Coffee Cup - TTDI", desc: "Tomato recommended" }
+            ]
+        },
+        {
+            question: "What should we do ;)",
+            options: [
+                { title: "Ride Bicycle - Putrajaya", desc: "Learn new Skills" },
+                { title: "Watch Movie - anywhere", desc: "long time u didnt do dy" },
+                { title: "Massage - Anywhere", desc: "U need this badly" },
+                { title: "Aquaria KLCC", desc: "Its free for you" }
+            ]
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let userName = "";
+    let answers = [];
+
+    function startQuiz() {
+        userName = document.getElementById('username').value.trim();
+        if (!userName) {
+            alert("Please enter your name!");
+            return;
+        }
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const container = document.getElementById('quiz-container');
+        const q = questions[currentQuestionIndex];
+        let html = `<h2>${q.question}</h2>`;
+        q.options.forEach((opt, index) => {
+            html += `
+                <div class="option" onclick="selectOption(${index})">
+                    <div class="option-title">${opt.title}</div>
+                    <div class="option-desc">${opt.desc}</div>
+                </div>
+            `;
+        });
+        container.innerHTML = html;
+        document.getElementById('next-btn').style.display = "none";
+    }
+
+    function selectOption(index) {
+        const options = document.querySelectorAll('.option');
+        options.forEach((opt, i) => {
+            opt.classList.add('revealed');
+            opt.classList.remove('selected');
+            if (i === index) {
+                opt.classList.add('selected');
+            }
+        });
+        answers[currentQuestionIndex] = index;
+        document.getElementById('next-btn').style.display = "block";
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            showQuestion();
+        } else {
+            showResults();
+        }
+    }
+
+    function showResults() {
+        const container = document.getElementById('quiz-container');
+        let html = `<h2>Results for ${userName}</h2>`;
+        questions.forEach((q, qi) => {
+            html += `<div class="results"><div class="result-block"><strong>${q.question}</strong>`;
+            html += `<p><u>You chose:</u> ${q.options[answers[qi]].title} - ${q.options[answers[qi]].desc}</p>`;
+            html += `<p><u>Others:</u></p><ul>`;
+            q.options.forEach((opt, oi) => {
+                if (oi !== answers[qi]) {
+                    html += `<li>${opt.title} - ${opt.desc}</li>`;
+                }
+            });
+            html += `</ul></div></div>`;
+        });
+        container.innerHTML = html;
+        document.getElementById('next-btn').style.display = "none";
+    }
+</script>
+</body>
+</html>
